@@ -14,7 +14,7 @@
 
 // If you want to comment this out, please make sure that you enable USB Support
 // on the Arduino tools menu, so the output comes out of USB
-//#define NODEBUG
+#define NODEBUG
 
 // Version of the product
 #define STRINGIFY(x) STRINGIFY_(x)

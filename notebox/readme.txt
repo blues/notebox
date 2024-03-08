@@ -41,3 +41,6 @@ The Notebox concept is simple and threefold:
     howdy partner\n
 	b) In the cloud, you see a web request that is sent to an alias 'incoming' whose body field is:
 	{"class":"log,"message:"howdy partner"}
+
+6. Request/response from a device to the cloud is simply a combination of #2 and #1, where the app defines a request vocabulary
+   and sends the result back to the device as appropriate.
