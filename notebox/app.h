@@ -17,11 +17,16 @@
 #define NODEBUG
 
 // Version of the product
-#define STRINGIFY(x) STRINGIFY_(x)
-#define STRINGIFY_(x) #x
+#define	PRODUCT_DISPLAY_NAME		"Notebox"
 #define PRODUCT_PROGRAMMATIC_NAME   "notebox"
 #define PRODUCT_MAJOR				1
+#define PRODUCT_MINOR				1
+#define PRODUCT_PATCH				1
 #define PRODUCT_VERSION PRODUCT_PROGRAMMATIC_NAME "-v" STRINGIFY(PRODUCT_MAJOR)
+
+// C trickery for converting a #defined number to a #defined string
+#define STRINGIFY(x) STRINGIFY_(x)
+#define STRINGIFY_(x) #x
 
 // Notehub definitions
 #define	NOTEHUB_PRODUCT_UID			"com.blues.notebox"

@@ -19,7 +19,7 @@ void setup()
     debug.begin(115200);
 	uint32_t expires = millis() + 2500;
     while (!debug && millis() < expires);
-    debug.printf("*** %s ***\n", appVersion());
+    debug.printf("*** %s ***\n", PRODUCTION_VERSION FIRMWARE_BUILT);
 #endif
 
     // Initialize the RTOS support (see NoteRTOS.h)

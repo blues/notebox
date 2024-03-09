@@ -11,9 +11,17 @@
 #define	FIRMWARE_BUILT __DATE__ " " __TIME__
 #define	FIRMWARE_VERSION_HEADER "firmware::info:"
 #define FIRMWARE_VERSION FIRMWARE_VERSION_HEADER			\
-    "{" QUOTE("version") ":" QUOTE(PRODUCT_VERSION)         \
+    "[" QUOTE("product") ":" QUOTE(PRODUCT_DISPLAY_NAME)    \
+    "," QUOTE("version") ":" QUOTE(PRODUCT_VERSION)         \
+    "," QUOTE("ver_major") ":" STRINGIFY(PRODUCT_MAJOR)		\
+    "," QUOTE("ver_minor") ":" STRINGIFY(PRODUCT_MINOR)		\
+    "," QUOTE("ver_patch") ":" STRINGIFY(PRODUCT_PATCH)		\
     "," QUOTE("built") ":" QUOTE(FIRMWARE_BUILT)			\
     "}"
+
+// Ensure that the version is included once and only once in the binary image, with an
+// attribute that ensures that it isn't optimized out of the image even if not referenced.
+const char firmwareVersion[] __attribute__((used)) = FIRMWARE_VERSION;
 
 // Notecard capabilities
 bool appHasGPS = false;
@@ -25,11 +33,6 @@ bool appHasLoRa = false;
 // Forwards
 void appTask(void *param);
 const char *notecardInit(void);
-
-// Return the firmware's version, which is both stored within the image and which is verified by DFU
-const char *appVersion() {
-    return (const char *) (&FIRMWARE_VERSION[sizeof(FIRMWARE_VERSION_HEADER)-1]);
-}
 
 // Set up everything we can that does NOT need FreeRTOS running
 bool appSetup(void)
@@ -116,17 +119,6 @@ const char *notecardInit(void)
     JAddStringToObject(req, "voutbound", "usb:5;60");
     if (!notecard.sendRequest(req)) { 
         return "notecard not responding";
-    }
-
-	// Make sure the notecard knows how large our serial buffer is, so
-	// that it does flow control when sending thigns back to us.  We
-	// use the Arduino RX buffer size minus one because some platforms
-	// there is a stall when we hit buffer full.
-    req = NoteNewRequest("card.aux.serial");
-    JAddIntToObject(req, "max", SERIAL_RX_BUFFER_SIZE-1);
-    JAddIntToObject(req, "ms", 25);
-    if (!notecard.sendRequest(req)) {
-		return "error setting RX buffer size";
     }
 
     // Inform the notehub of the our firmware version

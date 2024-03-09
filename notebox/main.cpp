@@ -54,9 +54,15 @@ void mainTask(void *param)
 		notecardAuxInitialized = true;
 	}
 
-    // Subscribe to inbound notifications
+    // Subscribe to inbound notifications for signals & environment.
+	// Make sure the notecard knows how large our serial buffer is, so
+	// that it does flow control when sending thigns back to us.  We
+	// use the Arduino RX buffer size minus one because some platforms
+	// there is a stall when we hit buffer full.
     J *req = NoteNewRequest("card.aux.serial");
 	JAddStringToObject(req, "mode", "notify,-all,signals,env");
+    JAddIntToObject(req, "max", SERIAL_RX_BUFFER_SIZE-1);
+    JAddIntToObject(req, "ms", 25);
     if (!notecard.sendRequest(req)) {
 		debugf("can't subscribe to notifications from notecard\n");
 		while (true) {
@@ -67,7 +73,8 @@ void mainTask(void *param)
     // Load the environment vars for the first time
     refreshEnvironmentVars();
 
-	// Do nothing for now
+	// Do nothing.  In a more typical app, this is where the main
+	// processing would go.
 	while (true) {
 		_delay(150000);
 	}
