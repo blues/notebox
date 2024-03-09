@@ -10,9 +10,6 @@ bool consoleUARTInitialized = false;
 bool consoleUSBInitialized = false;
 HardwareSerial notecardAux(WIRING_RX_FM_NOTECARD_AUX_TX, WIRING_TX_TO_NOTECARD_AUX_RX);
 HardwareSerial consoleUART(WIRING_RX_FM_CONSOLE_TX, WIRING_TX_TO_CONSOLE_RX);
-#ifdef NODEBUG
-//HardwareSerial consoleUSB(WIRING_RX_FM_CONSOLE_TX, WIRING_TX_TO_CONSOLE_RX);
-#endif
 
 // Environment handling
 int64_t environmentModifiedTime = 0;

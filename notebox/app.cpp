@@ -6,7 +6,7 @@
 
 // This is a product configuration JSON structure that enables the Notehub to recognize this
 // firmware when it's uploaded, to help keep track of versions and so we only ever download
-// firmware buildss that are appropriate for this device.
+// firmware builds that are appropriate for this device.
 #define QUOTE(x) "\"" x "\""
 #define	FIRMWARE_BUILT __DATE__ " " __TIME__
 #define	FIRMWARE_VERSION_HEADER "firmware::info:"
@@ -104,6 +104,14 @@ const char *notecardInit(void)
 {
     J *req, *rsp;
 
+	// Create a reference to the FIRMWARE_VERSION string that will
+	// not be optimized away by the GCC coompiler and linker, as the
+	// FIRMWARE_VERSION string MUST be present in the firmware image
+	// in order to support the Notecard's firmware update mechanisms.
+	// You can verify this by searching the .bin file like this:
+	//   strings notebox.ino.bin | grep "firmware::info:"
+	const char * volatile reference = FIRMWARE_VERSION;
+
     // Set hub parameters so that we are highly responsive when online, and
 	// only ping occasionally when the power goes out.
     req = notecard.newRequest("hub.set");
@@ -117,15 +125,9 @@ const char *notecardInit(void)
         return "notecard not responding";
     }
 
-    // Inform the notehub of the our firmware version.  Note that the "firmware"
-	// field is not actually used by the notecard, but rather we are passing it
-	// so as to create a reference to the FIRMWARE_VERSION string that will not
-	// be optimized away by the GCC coompiler and linker, as a single copy of the
-	// the FIRMWARE_VERSION string MUST be present in the firmware image in order
-	// to support the Notecard's firmware update mechanisms.
+    // Inform the notehub of the our firmware version.  
     req = notecard.newRequest("dfu.status");
     JAddStringToObject(req, "version", PRODUCT_VERSION);
-	JAddStringToObject(req, "firmware", FIRMWARE_VERSION);
     if (!notecard.sendRequest(req)) {
 		return "error sending our firmware version to Notehub";
 	}
