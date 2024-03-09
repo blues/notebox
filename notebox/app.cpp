@@ -19,10 +19,6 @@
     "," QUOTE("built") ":" QUOTE(FIRMWARE_BUILT)			\
     "}"
 
-// Ensure that the version is included once and only once in the binary image, with an
-// attribute that ensures that it isn't optimized out of the image even if not referenced.
-const char firmwareVersion[] __attribute__((used)) = FIRMWARE_VERSION;
-
 // Notecard capabilities
 bool appHasGPS = false;
 bool appHasCellular = false;
@@ -121,9 +117,15 @@ const char *notecardInit(void)
         return "notecard not responding";
     }
 
-    // Inform the notehub of the our firmware version
+    // Inform the notehub of the our firmware version.  Note that the "firmware"
+	// field is not actually used by the notecard, but rather we are passing it
+	// so as to create a reference to the FIRMWARE_VERSION string that will not
+	// be optimized away by the GCC coompiler and linker, as a single copy of the
+	// the FIRMWARE_VERSION string MUST be present in the firmware image in order
+	// to support the Notecard's firmware update mechanisms.
     req = notecard.newRequest("dfu.status");
     JAddStringToObject(req, "version", PRODUCT_VERSION);
+	JAddStringToObject(req, "firmware", FIRMWARE_VERSION);
     if (!notecard.sendRequest(req)) {
 		return "error sending our firmware version to Notehub";
 	}
